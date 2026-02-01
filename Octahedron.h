@@ -1,0 +1,59 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Octahedron.generated.h"
+
+UCLASS()
+class PEKBGGAP_API AOctahedron : public AActor
+{
+    GENERATED_BODY()
+
+public:
+    AOctahedron();
+
+protected:
+    virtual void BeginPlay() override;
+
+#if WITH_EDITOR
+    virtual void OnConstruction(const FTransform& Transform) override;
+#endif
+
+private:
+    void CreateOctahedron();
+    TArray<FVector> GenerateOctahedronVertices() const;
+    void DrawEdges(const TArray<FVector>& Vertices);
+    void ClearSpawned();
+
+    UPROPERTY()
+    USceneComponent* Root;
+
+    UPROPERTY(Transient)
+    TArray<TWeakObjectPtr<AActor>> SpawnedVertices;
+
+public:
+    // Prefab/Blueprint to spawn for each vertex
+    UPROPERTY(EditAnywhere, Category = "Octahedron")
+    TSubclassOf<AActor> VertexActorClass;
+
+    // Scale factor in cm (100 = 1m); multiplies unit vertex positions
+    UPROPERTY(EditAnywhere, Category = "Octahedron", meta = (ClampMin = "0.0"))
+    float Radius = 100.f;
+
+    // Debug edge rendering
+    UPROPERTY(EditAnywhere, Category = "Octahedron")
+    bool bDrawEdges = true;
+
+    UPROPERTY(EditAnywhere, Category = "Octahedron")
+    FLinearColor LineColor = FLinearColor(0.f, 1.f, 1.f, 1.f);
+
+    UPROPERTY(EditAnywhere, Category = "Octahedron", meta = (ClampMin = "0.0"))
+    float DebugLineDuration = 10.f; // seconds; 0 = one frame
+
+    // Spawn behavior
+    UPROPERTY(EditAnywhere, Category = "Octahedron")
+    bool bSpawnAtBeginPlay = true;
+
+    UPROPERTY(EditAnywhere, Category = "Octahedron")
+    bool bRebuildOnConstruction = true;
+};
